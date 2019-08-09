@@ -1,17 +1,30 @@
 ## Imports
 import numpy as np
 import cv2
+import pickle
 
 #########################################################################################
 ## Global variables
 imgFilePath = "images"
 rectColor = (255, 0, 0) # Is in BGR color scheme
-rectStroke = 2
+rectStroke = 1
 cascadeClassifierFile = 'haarcascade_frontalface_alt2.xml'
+font = cv2.FONT_HERSHEY_PLAIN
+colorFont = (255, 255, 255)
+fontStroke = 2
+fontSize = 1
+MIN_CONF = 45
+MAX_CONF = 75
 #########################################################################################
 
 ## Code
 face_cascade = cv2.CascadeClassifier('cascades/data/' + cascadeClassifierFile)
+recognizer = cv2.face.LBPHFaceRecognizer_create()
+recognizer.read("trainer.yml")
+tempLabels = {}
+with open("labels.pickle", "rb") as f:
+    tempLabels = pickle.load(f)
+    labels = {v:k for k,v in tempLabels.items()}
 
 capture = cv2.VideoCapture(0)
 
@@ -24,7 +37,7 @@ while(True):
     tempIncr = 0
 
     for(x, y, w, h) in faces:
-        print(x, y, w, h)       # print values from face
+        #print(x, y, w, h)       # print values from face
 
         # roi: region of interest
         # Save image
@@ -34,8 +47,11 @@ while(True):
         # Recognize region of interest
         # A deep learned model could be used to predict things here (keras, tensorflow or pytorch)
         # This method doesn't work 100%, but it works!
+        id, conf = recognizer.predict(roi_gray)
+        if conf >= MIN_CONF and conf  <= MAX_CONF:
+            name = labels[id]
+            cv2.putText(frame, name + ", " + str(conf), (x, y+h), font, fontSize, colorFont, fontStroke, cv2.LINE_AA)
 
-        
         cv2.imwrite(str(tempIncr)+'.png', roi_gray)
         tempIncr = tempIncr + 1
 
@@ -51,4 +67,4 @@ while(True):
 
 # When everything done, release the capture
 capture.release()
-cv2.destroyAllWindws()
+cv2.destroyAllWindows()
