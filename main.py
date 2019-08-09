@@ -3,6 +3,8 @@ import numpy as np
 import cv2
 import pickle
 
+# Homebrew imports
+from dataStructures import Person
 #########################################################################################
 ## Global variables
 imgFilePath = "images"
@@ -21,6 +23,7 @@ MAX_CONF = 75
 face_cascade = cv2.CascadeClassifier('cascades/data/' + cascadeClassifierFile)
 recognizer = cv2.face.LBPHFaceRecognizer_create()
 recognizer.read("trainer.yml")
+
 tempLabels = {}
 with open("labels.pickle", "rb") as f:
     tempLabels = pickle.load(f)
