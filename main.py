@@ -3,8 +3,6 @@ import numpy as np
 import cv2
 import pickle
 
-# Homebrew imports
-from dataStructures import Person
 #########################################################################################
 ## Global variables
 imgFilePath = "images"
